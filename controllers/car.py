@@ -26,13 +26,13 @@ def _create_mock_cars():
 # Car with BaseModel
 ####
 @router.get("/")
-def read_car():
+async def read_car():
     cars = _create_mock_cars()
     return {"cars": cars}
 
 
 @router.get("/{car_id}")
-def read_car_detail(car_id: int):
+async def read_car_detail(car_id: int):
     cars = _create_mock_cars()
     car_to_return = next(
         (car for car in cars if car.id == car_id), None)
@@ -43,7 +43,7 @@ def read_car_detail(car_id: int):
 
 
 @router.post("/")
-def create_car(car: Car):
+async def create_car(car: Car):
     cars = _create_mock_cars()
     cars.append(car)
     print(cars[2])
@@ -51,7 +51,7 @@ def create_car(car: Car):
 
 
 @router.put("/{car_id}")
-async def update_item(car_id: int, car: CarPUT):
+async def update_car(car_id: int, car: CarPUT):
     cars = _create_mock_cars()
     car_to_update = next((car for car in cars if car.id == car_id), None)
     car_to_update.wheels = car.wheels
@@ -59,4 +59,17 @@ async def update_item(car_id: int, car: CarPUT):
     car_to_update.brand = car.brand
     car_to_update.doors = car.doors
     car_to_update.registrationId = car.registrationId
+    return cars
+
+
+@router.delete("/{car_id}")
+async def delete_car(car_id: int):
+    cars = _create_mock_cars()
+    for car in cars:
+        if car.id == car_id:
+            cars.remove(car)
+            print("I found it!")
+            break
+    else:
+        raise HTTPException(status_code=404, detail="Item not found")
     return cars
